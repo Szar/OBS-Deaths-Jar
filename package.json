@@ -1,8 +1,8 @@
 {
-  "name": "twitch-deaths-jar",
+  "name": "obs-deaths-jar",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://localhost/twitch-deaths-jar/",
+  "homepage": "https://szar.dev/obs-deaths-jar/",
   "dependencies": {
     "node-sass": "^4.12.0",
     "p2": "^0.7.1",
