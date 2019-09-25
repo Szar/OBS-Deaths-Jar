@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import p2 from 'p2';
 
-const radius = 10,
-	img_width = 26;
+const radius = 9,
+	img_width = 24;
 
 var width = 72,
 	height = 330,
@@ -41,6 +41,10 @@ class Canvas extends React.Component {
 	}
 }
 
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
 function box(width, height, world, ballShapes) {
 	const top = new p2.Body({
 		position: [0, -jarHeight / 2],
@@ -48,17 +52,31 @@ function box(width, height, world, ballShapes) {
 	});
 
 	const bottom = new p2.Body({
-		position: [0, jarHeight / 2],
-		angle: Math.PI
+		position: [0, -jarHeight / 2],
+		angle: 0
 	});
 
+	/*const bottom = new p2.Body({
+		position: [0, jarHeight / 2],
+		angle: Math.PI
+	});*/
+
 	const left = new p2.Body({
-		position: [-jarWidth / 2, 0],
+		position: [(width/2)+(-jarWidth / 2)-5, -30],
 		angle: -Math.PI / 2
 	});
 
+	const side_left = new p2.Body({
+		position: [-width/2, 0],
+		angle: -Math.PI / 2
+	});
+	const side_right = new p2.Body({
+		position: [width*2, 0],
+		angle: Math.PI / 2
+	});
+
 	const right = new p2.Body({
-		position: [jarWidth / 2, 0],
+		position: [(width/2)+(jarWidth / 2)+5, -30],
 		angle: Math.PI / 2
 	});
 
@@ -66,9 +84,38 @@ function box(width, height, world, ballShapes) {
 
 	var sideShapes = [];
 
+	 
+	var side_left_sideShape = new p2.Plane(),
+		side_right_sideShape = new p2.Plane();
+	
+	side_left_sideShape.material = new p2.Material();
+	side_right_sideShape.material = new p2.Material();
+	side_left.addShape(side_left_sideShape);
+	side_right.addShape(side_right_sideShape);
+
+	world.addBody(side_left);
+	sideShapes.push(side_left_sideShape)
+
+	world.addBody(side_right);
+	sideShapes.push(side_right_sideShape)
+
 	for (let side of sides) {
-		const sideShape = new p2.Plane();
+		if(side.angle===0) {
+			var sideShape = new p2.Plane();
+		}
+		else if(side.angle===0.1) {
+			var sideShape = new p2.Plane();
+		}
+		else {
+			console.log(side.angle);
+			var sideShape = new p2.Box({ width: jarHeight-30, height: 5 });
+		}
+		//
+		
 		sideShape.material = new p2.Material();
+
+		
+
 		side.addShape(sideShape);
 		world.addBody(side);
 		sideShapes.push(sideShape)
@@ -128,6 +175,7 @@ class Overlay extends React.Component {
 		this.world = world;
 		this.balls = balls;
 		this.sideShapes = sideShapes;
+		this.sides = sides;
 		this.images = []
 		for (var i = 0; i < parseInt(this.count); i++) {
 			this.add();
@@ -136,11 +184,12 @@ class Overlay extends React.Component {
 	}
 
 	paint(ctx, dt) {
-		ctx.clearRect(0, 0, width, height);
-		ctx.fillStyle = "rgb(0,255,0)";
-		ctx.fillRect(0, 0, width, height);
-		ctx.lineWidth = 0;
+		ctx.clearRect(-width*2, -height*2, width*3, height*2);
 		ctx.save();
+		ctx.fillStyle = "rgb(0,255,0)";
+		ctx.fillRect(0, 0, width*3, height*2);
+		//ctx.lineWidth = 0;
+		
 		ctx.translate(width / 2, height / 2);
 		ctx.scale(1, 1);
 
@@ -152,9 +201,19 @@ class Overlay extends React.Component {
 			ctx.moveTo(ball.position[0], ball.position[1]);
 			ctx.drawImage(base_image, ball.position[0] - (img_width - (img_width - (radius))), -(ball.position[1] + (img_width)), img_width, img_width);
 		}
+
+		/*for (var i = 0; i < this.sides.length; i++) {
+			var side = this.sides[i]
+			ctx.moveTo(side.position[0], side.position[1]);
+			ctx.lineTo(side.position[0]+side.position[0].width, side.position[1]+side.position[0].height);
+			//ctx.drawImage(base_image, ball.position[0] - (img_width - (img_width - (radius))), -(ball.position[1] + (img_width)), img_width, img_width);
+		}*/
+
+
 		ctx.stroke();
 		ctx.restore();
 	}
+	
 	add() {
 		var enablePositionNoise = true,
 			N = 0,
@@ -163,8 +222,12 @@ class Overlay extends React.Component {
 			d = 2.2,
 			world = this.world;
 
-		var x = r * d + (enablePositionNoise ? Math.random() * r : 0);
-		var y = height / 2;
+		
+		//var y = height / 2;
+		//var x = width/2;
+		//var x = getRandomArbitrary(width/2-r, width/2+r);
+		var x = width/2+(getRandomArbitrary(1,3));
+		var y = height/2;
 		var p = new p2.Body({
 			mass: 1,
 			position: [x, y],

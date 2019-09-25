@@ -23,7 +23,7 @@ img {
 }
 
 #jar {
-	width: 120px;
+	text-align: center;
 	margin: auto;
 	position: relative;
 	margin-top: 35px;
@@ -31,14 +31,22 @@ img {
 		position: relative;
 		display: block;
 		z-index: 999;
+		width: 120px;
+		margin: auto;
+	}
+	canvas {
+		margin: auto;
 	}
 }
 
 #overlay {
 	position: absolute;
-	top: -25px;
-	left: 8px;
+	top: -21px;
+	left: 0;
+	right: 0;
+	bottom: 0;
 	z-index: 0;
+	margin-left: 112px;
 }
 
 #count {
